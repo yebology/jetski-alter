@@ -3,7 +3,7 @@ import jetskiImg from "../assets/aa.png";
 
 const LatestAccidentCard = ({ accident }) => {
   // Logika mendeteksi kecelakaan berdasarkan status "jetski nabrak bosque"
-  const isCrashed = accident.status === "jetski nabrak bosque"; 
+  const isCrashed = accident.status === "ACCIDENT DETECTED!"; 
 
   return (
     <div className={`flex flex-col bg-white shadow-lg rounded-2xl w-[600px] hover:shadow-2xl duration-300 ${isCrashed ? 'border-4 border-red-500' : 'border-4 border-green-500'}`}>

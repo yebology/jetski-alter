@@ -1,4 +1,5 @@
 // App.jsx
+import React from 'react';
 import { useState, useEffect } from "react";
 import LatestAccidentCard from "./components/LatestAccidentCard"; // Nama komponen baru
 import { database, ref, onValue } from "./firebase";

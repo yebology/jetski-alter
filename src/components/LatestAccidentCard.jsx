@@ -19,7 +19,7 @@ const LatestAccidentCard = ({ accident }) => {
       {/* Isi Card */}
       <div className="flex flex-col flex-1 p-8">
         <h2 className={`text-4xl font-extrabold mb-4 tracking-wide ${isCrashed ? 'text-red-600' : 'text-green-600'}`}>
-          Status Terbaru: {isCrashed ? '❗ KECELAKAAN' : '✅ Aman'}
+          Status Terbaru: {isCrashed ? '❗ KECELAKAAN!' : '✅ Aman'}
         </h2>
         <p className="text-xl text-gray-700 mb-4">
           <span className="font-semibold">Pesan:</span> {accident.status}

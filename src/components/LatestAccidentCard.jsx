@@ -2,9 +2,36 @@
 import React from "react";
 import jetskiImg from "../assets/aa.png";
 
+// Fungsi utilitas untuk mengonversi epoch ms ke format waktu lokal (UTC)
+const formatTimestamp = (epochMs) => {
+  if (!epochMs) return "N/A";
+
+  // Pastikan nilai epochMs adalah string atau number, dan dikonversi ke Number
+  const timeMs = Number(epochMs);
+
+  // Jika nilai epoch time tidak valid (misalnya, angka 32-bit yang kecil), tampilkan apa adanya.
+  if (timeMs < 1000000000000) {
+    return `${epochMs} ms (Invalid Epoch)`;
+  }
+  
+  // Menggunakan toUTCString() untuk menampilkan waktu dalam format UTC yang jelas
+  return new Date(timeMs).toUTCString();
+};
+
 const LatestAccidentCard = ({ accident }) => {
-  // cek status berdasarkan string dari Firebase
+  // Cek status berdasarkan string dari Firebase
   const isCrashed = accident.status_jetski === "KECELAKAAN_TERKONFIRMASI";
+
+  // Akses data kemiringan dan akselerasi langsung dari objek accident
+  // Catatan: Jika struktur Firebase Anda datar (roll dan pitch langsung di root), 
+  // Anda harus mengganti 'accident.kemiringan?.roll' menjadi 'accident.roll'.
+  // Saya berasumsi struktur flat berdasarkan kode ESP (Roll, Pitch di root, Akselerasi nesting).
+  const roll = accident.roll ?? "-";
+  const pitch = accident.pitch ?? "-";
+
+  // Akses data akselerasi yang nesting
+  const akselerasi = accident.akselerasi || {};
+  const waktu = accident.waktu || {};
 
   return (
     <div
@@ -38,15 +65,17 @@ const LatestAccidentCard = ({ accident }) => {
           {/* Kemiringan */}
           <div>
             <h3 className="font-bold text-gray-800 text-xl mb-2">
-              Kemiringan Jetski
+              Kemiringan & Status
             </h3>
-            <p>
-              <span className="font-semibold">Pitch:</span>{" "}
-              {accident.kemiringan?.pitch ?? "-"}°
+            <p className="mb-2">
+              <span className="font-semibold">Status:</span>{" "}
+              <span className="font-bold">{accident.status_jetski}</span>
             </p>
             <p>
-              <span className="font-semibold">Roll:</span>{" "}
-              {accident.kemiringan?.roll ?? "-"}°
+              <span className="font-semibold">Pitch:</span> {pitch}°
+            </p>
+            <p>
+              <span className="font-semibold">Roll:</span> {roll}°
             </p>
           </div>
 
@@ -56,19 +85,39 @@ const LatestAccidentCard = ({ accident }) => {
               Akselerasi (G-Force)
             </h3>
             <p>
-              <span className="font-semibold">X:</span>{" "}
-              {accident.akselerasi?.x ?? "-"} G
+              <span className="font-semibold">X:</span> {akselerasi.x ?? "-"} G
             </p>
             <p>
-              <span className="font-semibold">Y:</span>{" "}
-              {accident.akselerasi?.y ?? "-"} G
+              <span className="font-semibold">Y:</span> {akselerasi.y ?? "-"} G
             </p>
             <p>
-              <span className="font-semibold">Z:</span>{" "}
-              {accident.akselerasi?.z ?? "-"} G
+              <span className="font-semibold">Z:</span> {akselerasi.z ?? "-"} G
             </p>
           </div>
         </div>
+        
+        {/* Detail Waktu (Timestamp) */}
+        <div className="pt-4 border-t border-gray-200 text-sm text-gray-500 space-y-2">
+            <h3 className="font-bold text-gray-800 text-xl mb-2">
+              Detail Waktu (UTC)
+            </h3>
+            <p>
+              <span className="font-semibold text-gray-900">Server Time:</span> {formatTimestamp(waktu.firebase_server_ms)}
+            </p>
+            <p>
+              <span className="font-semibold text-gray-900">Receiver RX:</span> {formatTimestamp(waktu.rx_ms)}
+            </p>
+            <p>
+              <span className="font-semibold text-gray-900">Transmitter TX:</span> {formatTimestamp(waktu.tx_ms)}
+            </p>
+            
+            {/* Opsi Debug (Opsional, hapus jika tidak diperlukan) */}
+            <p className="text-xs mt-2 text-gray-400">
+                Latensi (RX - TX): 
+                {(Number(waktu.rx_ms) - Number(waktu.tx_ms)) / 1000} detik
+            </p>
+        </div>
+
       </div>
     </div>
   );
